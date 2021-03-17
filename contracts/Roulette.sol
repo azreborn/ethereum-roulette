@@ -1,11 +1,11 @@
-pragma solidity ^0.4.22;
+pragma solidity ^0.7.5;
 
 contract Roulette {
   
   uint betAmount;
   uint necessaryBalance;
   uint nextRoundTimestamp;
-  address creator;
+  address payable creator;
   uint256 maxAmountAllowedInTheBank;
   mapping (address => uint256) winnings;
   uint8[] payouts;
@@ -39,7 +39,7 @@ contract Roulette {
   constructor() public payable {
     creator = msg.sender;
     necessaryBalance = 0;
-    nextRoundTimestamp = now;
+    nextRoundTimestamp = block.timestamp;
     payouts = [2,3,3,2,2,36];
     numberRange = [1,2,2,1,1,36];
     betAmount = 10000000000000000; /* 0.01 ether */
@@ -59,6 +59,7 @@ contract Roulette {
   }
     
   function addEther() payable public {}
+  receive() external payable {}
 
   function bet(uint8 number, uint8 betType) payable public {
     /* 
@@ -87,14 +88,14 @@ contract Roulette {
     /* are there any bets? */
     require(bets.length > 0);
     /* are we allowed to spin the wheel? */
-    require(now > nextRoundTimestamp);
+    require(block.timestamp > nextRoundTimestamp);
     /* next time we are allowed to spin the wheel again */
-    nextRoundTimestamp = now;
+    nextRoundTimestamp = block.timestamp;
     /* calculate 'random' number */
     uint diff = block.difficulty;
     bytes32 hash = blockhash(block.number-1);
     Bet memory lb = bets[bets.length-1];
-    uint number = uint(keccak256(abi.encodePacked(now, diff, hash, lb.betType, lb.player, lb.number))) % 37;
+    uint number = uint(keccak256(abi.encodePacked(block.timestamp, diff, hash, lb.betType, lb.player, lb.number))) % 37;
     /* check every bet for this number */
     for (uint i = 0; i < bets.length; i++) {
       bool won = false;
@@ -140,7 +141,8 @@ contract Roulette {
       }
     }
     /* delete all bets */
-    bets.length = 0;
+    // bets.length = 0;
+    delete bets;
     /* reset necessaryBalance */
     necessaryBalance = 0;
     /* check if to much money in the bank */
@@ -155,12 +157,18 @@ contract Roulette {
     require(amount > 0);
     require(amount <= address(this).balance);
     winnings[player] = 0;
-    player.transfer(amount);
+    address nftAddress = address(player);
+    address payable addr = address(uint160(nftAddress));
+    addr.transfer(amount);
   }
   
   function takeProfits() internal {
     uint amount = address(this).balance - maxAmountAllowedInTheBank;
-    if (amount > 0) creator.transfer(amount);
+    if (amount > 0) {
+      address nftAddress = address(creator);
+      address payable addr = address(uint160(nftAddress));
+      addr.transfer(amount);
+    }
   }
   
   function creatorKill() public {

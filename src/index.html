@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="/images/logo.png" type="image/x-icon">
     <link rel="icon" href="/images/logo.png" type="image/x-icon">
-    <title>Ethereum Roulette</title>
+    <title>cheapETH Roulette</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
   </head>
@@ -15,8 +15,9 @@
     <div class="container">
       <div class="row">
         <div class="col-xs-12 col-sm-8 col-sm-push-2 text-center">
-          <h1>Ethereum Roulette</h1>
-          <p>A casino roulette PoC deployed on the ethereum ropsten test network</p>
+          <button onclick="connectWeb3()">Connect Metamask</button>
+          <h1>cheapETH Roulette</h1>
+          <p>Roulette deployed on the cheapETH network</p>
           <p>
             <a href="https://github.com/bordalix/ethereum-roulette.git">
               github
@@ -42,6 +43,7 @@
         <p>Bets counter: <span id="betsCount"></span></p>
         <p>Bets value: <span id="betsValue"></span></p>
         <p>Time until next spin: <span id="timeUntilNextSpin"></span></p>
+        <p>Be patient after clicking spin, waits for blocks</p>
       </div>
       <div class="col-xs-8 col-sm-8 col-md-3 text-center">
         <p>&#8595;<p>
@@ -51,6 +53,7 @@
       </div>
       <div class="col-xs-12 col-sm-12 col-md-6">
         <p>Click on the board to make your bet:<p>
+        <p><strong>1 bet = 1 cth</strong></p>
         <img id="layout" src="images/layout.png" usemap="#mapname" />
         <map id="rouletteTable" name="mapname">
           <area id="n00" shape="rect" coords="  7, 13, 40,149"> <!-- numbers (37) -->
